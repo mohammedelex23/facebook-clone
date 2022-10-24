@@ -14,12 +14,9 @@ export const Index = () => {
     },
   });
 
-  useEffect(() => {}, [
-    email.value,
-    email.style,
-    password.value,
-    password.style,
-  ]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [email.value, email.style, password.value, password.style]);
 
   const handleChange = (type) => (e) => {
     switch (type) {

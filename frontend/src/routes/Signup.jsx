@@ -64,6 +64,7 @@ export const Signup = () => {
   const abortController = new AbortController();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     return () => {
       abortController.abort();
     };
@@ -424,7 +425,10 @@ export const Signup = () => {
   };
 
   return (
-    <div className="p-7 relative bg-gray-200 h-[auto] overflow-auto">
+    <div
+      id="signup"
+      className="p-7 relative bg-gray-200 h-[auto] overflow-auto"
+    >
       {/* title */}
       <h1 className="text-2xl text-blue-500 font-bold text-center my-3">
         Create new account
