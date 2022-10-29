@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import authApi from "../api/authApi";
 import { ErrorComp } from "../components/ErrorComp";
+import { useSignupForm } from "../components/hooks/useSignupForm";
 
 export const Signup = () => {
   const days = [
@@ -24,19 +25,21 @@ export const Signup = () => {
     gender: "",
   });
 
-  useEffect(() => {
-    // window.scrollTo(0, 0);
-  }, [
-    formState.name,
-    formState.email,
-    formState.password,
-    formState.confirmPassword,
-    formState.day,
-    formState.month,
-    formState.year,
-    formState.gender,
-    lastDay,
-  ]);
+  const { errors, handleOnBlur, validateFormFields } = useSignupForm(formState);
+
+  // useEffect(() => {
+  //   // window.scrollTo(0, 0);
+  // }, [
+  //   formState.name,
+  //   formState.email,
+  //   formState.password,
+  //   formState.confirmPassword,
+  //   formState.day,
+  //   formState.month,
+  //   formState.year,
+  //   formState.gender,
+  //   lastDay,
+  // ]);
 
   const handleChange = (type) => (e) => {
     setFormState({
@@ -49,9 +52,17 @@ export const Signup = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    alert(JSON.stringify(formState));
+
+    const { isValid } = validateFormFields({
+      errors,
+      formState,
+      submitValidation: true,
+    });
+
+    if (!isValid) return;
+    console.log("success submit");
   };
 
   return (
@@ -74,15 +85,16 @@ export const Signup = () => {
             Name
           </label>
           <input
-            required
             name="name"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="text"
             value={formState.name}
             onChange={handleChange("name")}
             placeholder="Name"
-            style={{}}
+            style={errors.name.style}
+            onBlur={handleOnBlur}
           />
+          {errors.name.error ? <ErrorComp error={errors.name.message} /> : null}
         </div>
         {/* email */}
         <div className="flex flex-col">
@@ -90,14 +102,18 @@ export const Signup = () => {
             Email
           </label>
           <input
-            required
             name="email"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
-            type="email"
+            type="text"
             value={formState.email}
             onChange={handleChange("email")}
             placeholder="Email"
+            onBlur={handleOnBlur}
+            style={errors.email.style}
           />
+          {errors.email.error ? (
+            <ErrorComp error={errors.email.message} />
+          ) : null}
         </div>
         {/* password */}
         <div className="flex flex-col">
@@ -105,14 +121,18 @@ export const Signup = () => {
             Password
           </label>
           <input
-            required
             name="password"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="password"
             value={formState.password}
             onChange={handleChange("password")}
             placeholder="Password"
+            onBlur={handleOnBlur}
+            style={errors.password.style}
           />
+          {errors.password.error ? (
+            <ErrorComp error={errors.password.message} />
+          ) : null}
         </div>
         {/* confirm password */}
         <div className="flex flex-col">
@@ -120,14 +140,18 @@ export const Signup = () => {
             Confirm Password
           </label>
           <input
-            required
-            name="passwordAgain"
+            name="confirmPassword"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="password"
             value={formState.confirmPassword}
             onChange={handleChange("confirmPassword")}
-            placeholder="Password again"
+            placeholder="Confirm password"
+            onBlur={handleOnBlur}
+            style={errors.confirmPassword.style}
           />
+          {errors.confirmPassword.error ? (
+            <ErrorComp error={errors.confirmPassword.message} />
+          ) : null}
         </div>
         {/* date of birth */}
         <div className="mb-2">
@@ -138,11 +162,12 @@ export const Signup = () => {
             <div className="flex flex-col">
               <label htmlFor="day">Day</label>
               <select
-                required
                 className="border border-black p-1"
                 name="day"
                 value={formState.day}
                 onChange={handleChange("day")}
+                onBlur={handleOnBlur}
+                style={errors.day.style}
               >
                 <option value="">select</option>
                 {lastDay > 0 &&
@@ -150,16 +175,20 @@ export const Signup = () => {
                     .slice(0, lastDay)
                     .map((day, index) => <option key={index}>{day}</option>)}
               </select>
+              {errors.day.error ? (
+                <ErrorComp error={errors.day.message} />
+              ) : null}
             </div>
             {/* month */}
             <div className="flex flex-col">
               <label htmlFor="month">Month</label>
               <select
-                required
                 onChange={handleChange("month")}
                 className="border border-black p-1"
                 name="month"
                 value={formState.month}
+                onBlur={handleOnBlur}
+                style={errors.month.style}
               >
                 <option value="">select</option>
                 <option value={31}>Janaury</option>
@@ -175,16 +204,20 @@ export const Signup = () => {
                 <option value={30}>November</option>
                 <option value={31}>December</option>
               </select>
+              {errors.month.error ? (
+                <ErrorComp error={errors.month.message} />
+              ) : null}
             </div>
             {/* year */}
             <div className="flex flex-col">
               <label htmlFor="year">Year</label>
               <select
-                required
                 className="border border-black p-1"
                 name="year"
                 value={formState.year}
                 onChange={handleChange("year")}
+                onBlur={handleOnBlur}
+                style={errors.year.style}
               >
                 <option value="">select</option>
                 <option value="1940">1940</option>
@@ -271,6 +304,9 @@ export const Signup = () => {
                 <option value="2021">2021</option>
                 <option value="2022">2022</option>
               </select>
+              {errors.year.error ? (
+                <ErrorComp error={errors.year.message} />
+              ) : null}
             </div>
           </div>
         </div>
@@ -293,6 +329,7 @@ export const Signup = () => {
                 type="radio"
                 radiovalue="male"
                 checked
+                onBlur={handleOnBlur}
               />
             </label>
             <label
@@ -307,6 +344,7 @@ export const Signup = () => {
                 name="radio"
                 type="radio"
                 radiovalue="female"
+                onBlur={handleOnBlur}
               />
             </label>
           </div>
