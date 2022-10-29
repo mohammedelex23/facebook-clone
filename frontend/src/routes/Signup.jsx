@@ -11,6 +11,10 @@ export const Signup = () => {
   ];
   const [lastDay, setLastDay] = useState(28);
 
+  const [submitted, setSubmitted] = useState(false);
+
+  const [ready, setReady] = useState(true);
+
   // form fileds states
   const [name, setName] = useState({
     value: "",
@@ -43,31 +47,30 @@ export const Signup = () => {
 
   const [day, setDay] = useState({
     value: "",
+    error: "",
     style: {
       border: "1px solid black",
     },
   });
   const [month, setMonth] = useState({
     value: "",
+    error: "",
     style: {
       border: "1px solid black",
     },
   });
   const [year, setYear] = useState({
     value: "",
+    error: "",
     style: {
       border: "1px solid black",
     },
   });
 
   const [gender, setGender] = useState("male");
-  const abortController = new AbortController();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    return () => {
-      abortController.abort();
-    };
   }, [
     lastDay,
     name.value,
@@ -90,22 +93,64 @@ export const Signup = () => {
   const handleChange = (type) => (e) => {
     switch (type) {
       case "name":
-        setName({ ...name, value: e.target.value });
+        setName({
+          ...name,
+          value: e.target.value,
+          style: {
+            border: "1px solid black",
+          },
+          error: "",
+        });
         break;
       case "email":
-        setEmail({ ...email, value: e.target.value });
+        setEmail({
+          ...email,
+          value: e.target.value,
+          style: {
+            border: "1px solid black",
+          },
+          error: "",
+        });
         break;
       case "password":
-        setPassword({ ...password, value: e.target.value });
+        setPassword({
+          ...password,
+          value: e.target.value,
+          style: {
+            border: "1px solid black",
+          },
+          error: "",
+        });
         break;
       case "passwordAgain":
-        setPasswordAgain({ ...passwordAgain, value: e.target.value });
+        setPasswordAgain({
+          ...passwordAgain,
+          value: e.target.value,
+          style: {
+            border: "1px solid black",
+          },
+          error: "",
+        });
         break;
       case "day":
-        setDay({ ...day, value: e.target.value });
+        setDay({
+          ...day,
+          value: e.target.value,
+          style: {
+            border: "1px solid black",
+          },
+          error: "",
+        });
         break;
       case "year":
-        setYear({ ...year, value: e.target.value });
+        setYear({
+          ...year,
+          value: e.target.value,
+          style: {
+            border: "1px solid black",
+          },
+          error: "",
+        });
         break;
       case "gender":
         setGender(e.target.id);
@@ -118,7 +163,14 @@ export const Signup = () => {
   const handleMonthSelect = (e) => {
     let days = e.target.selectedOptions[0].getAttribute("days");
     setLastDay(days);
-    setMonth({ ...month, value: e.target.value });
+    setMonth({
+      ...month,
+      value: e.target.value,
+      style: {
+        border: "1px solid black",
+      },
+      error: "",
+    });
   };
 
   const handleOnBlur = (type) => (e) => {
@@ -173,24 +225,51 @@ export const Signup = () => {
         }
         break;
       case "password":
-        validateFormFields("password");
-        if (!password.value || (password.value && !password.value.trim())) {
+      case "passwordAgain":
+        validateFormFields("passwordAgain");
+        // >= 8 ==
+        if (
+          passwordAgain.value.length >= 8 &&
+          password.value.length >= 8 &&
+          password.value === passwordAgain.value
+        ) {
           setPassword({
             ...password,
-            error: "Password is required",
+            error: "",
+            style: {
+              border: "1px solid black",
+            },
+          });
+          setPasswordAgain({
+            ...passwordAgain,
+            error: "",
+            style: {
+              border: "1px solid black",
+            },
+          });
+        }
+        // >= 8 !=
+        if (
+          passwordAgain.value.length >= 8 &&
+          password.value.length >= 8 &&
+          password.value !== passwordAgain.value
+        ) {
+          setPassword({
+            ...password,
+            error: "Password mismatch",
             style: {
               border: "1px solid red",
             },
           });
-        } else if (password.value.length < 8) {
-          setPassword({
-            ...password,
-            error: "Password should be 8 characters at least",
+          setPasswordAgain({
+            ...passwordAgain,
+            error: "Password mismatch",
             style: {
               border: "1px solid red",
             },
           });
-        } else {
+        }
+        if (passwordAgain.value.length < 8 && password.value.length >= 8) {
           setPassword({
             ...password,
             error: "",
@@ -199,9 +278,16 @@ export const Signup = () => {
             },
           });
         }
-        break;
-      case "passwordAgain":
-        validateFormFields("passwordAgain");
+        if (password.value.length < 8 && passwordAgain.value.length >= 8) {
+          setPasswordAgain({
+            ...passwordAgain,
+            error: "",
+            style: {
+              border: "1px solid black",
+            },
+          });
+        }
+
         // validate password
         if (!password.value || (password.value && !password.value.trim())) {
           setPassword({
@@ -240,46 +326,14 @@ export const Signup = () => {
               border: "1px solid red",
             },
           });
-        } else if (
-          passwordAgain.value.length > 8 &&
-          password.value.length > 8 &&
-          password.value !== passwordAgain.value
-        ) {
-          setPassword({
-            ...password,
-            error: "Password mismatch",
-            style: {
-              border: "1px solid red",
-            },
-          });
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "Password mismatch",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        } else {
-          setPassword({
-            ...password,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
         }
+
         break;
       case "day":
         if (!day.value || (day.value && !day.value.trim())) {
           setDay({
             ...day,
+            error: "required",
             style: {
               border: "1px solid red",
             },
@@ -287,6 +341,7 @@ export const Signup = () => {
         } else {
           setDay({
             ...day,
+            error: "",
             style: {
               border: "1px solid black",
             },
@@ -297,6 +352,7 @@ export const Signup = () => {
         if (!month.value || (month.value && !month.value.trim())) {
           setMonth({
             ...month,
+            error: "required",
             style: {
               border: "1px solid red",
             },
@@ -304,6 +360,7 @@ export const Signup = () => {
         } else {
           setMonth({
             ...month,
+            error: "",
             style: {
               border: "1px solid black",
             },
@@ -314,6 +371,7 @@ export const Signup = () => {
         if (!year.value || (year.value && !year.value.trim())) {
           setYear({
             ...year,
+            error: "required",
             style: {
               border: "1px solid red",
             },
@@ -321,6 +379,7 @@ export const Signup = () => {
         } else {
           setYear({
             ...year,
+            error: "",
             style: {
               border: "1px solid black",
             },
@@ -334,16 +393,55 @@ export const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const data = {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-        dateOfBirth: new Date(`${month.value}-${day.value}-${year.value}`),
-        gender,
-      };
-      await authApi.signup(data, abortController.signal);
-    } catch (error) {}
+    let ready = false;
+
+    console.log("ready", ready);
+    if (ready) {
+      try {
+        const data = {
+          name: name.value,
+          email: email.value,
+          password: password.value,
+          dateOfBirth: new Date(`${month.value}-${day.value}-${year.value}`),
+          gender,
+        };
+        setSubmitted(true);
+        let res = await authApi.signup(data);
+        if (res) {
+          console.log(res);
+          setSubmitted(false);
+        }
+      } catch (error) {
+        error.errors.forEach((error) => {
+          switch (error.name) {
+            case "name":
+              setName({
+                ...name,
+                error: error.message,
+                style: {
+                  border: "1px solid red",
+                },
+              });
+              break;
+            case "password":
+            case "email":
+              setEmail({
+                ...email,
+                error: error.message,
+                style: {
+                  border: "1px solid red",
+                },
+              });
+              break;
+            default:
+              break;
+          }
+        });
+        setSubmitted(false);
+      }
+    } else {
+      console.log("submit", ready);
+    }
   };
 
   // validate form fields
@@ -533,6 +631,7 @@ export const Signup = () => {
                     .slice(0, lastDay)
                     .map((day, index) => <option key={index}>{day}</option>)}
               </select>
+              {day.error && <ErrorComp error={day.error} />}
             </div>
             {/* month */}
             <div className="flex flex-col">
@@ -584,6 +683,7 @@ export const Signup = () => {
                   December
                 </option>
               </select>
+              {month.error && <ErrorComp error={month.error} />}
             </div>
             {/* year */}
             <div className="flex flex-col">
@@ -682,6 +782,7 @@ export const Signup = () => {
                 <option value="2021">2021</option>
                 <option value="2022">2022</option>
               </select>
+              {year.error && <ErrorComp error={year.error} />}
             </div>
           </div>
         </div>
@@ -720,12 +821,43 @@ export const Signup = () => {
         </div>
         {/* signup button */}
         <div>
-          <button
-            className="mt-2 bg-green-600 shadow-sm rounded text-lg text-white px-3 py-1 w-full"
-            type="submit"
-          >
-            Sign up
-          </button>
+          {submitted ? (
+            <button
+              type="button"
+              className="mt-2 inline-flex items-center flex justify-center px-3 py-1 text-sm font-semibold leading-6 text-white transition duration-150 ease-in-out bg-green-400 rounded w-full shadow cursor-not-allowed hover:bg-green-600"
+              disabled=""
+            >
+              <svg
+                className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Signing up...
+            </button>
+          ) : (
+            <button
+              className="mt-2 bg-green-600 shadow-sm rounded text-lg text-white px-3 py-1 w-full"
+              type="submit"
+              disabled={ready}
+            >
+              Sign up
+            </button>
+          )}
         </div>
         {/* break */}
         <div className="my-5 flex justify-between gap-3 items-center">

@@ -1,4 +1,4 @@
-const signup = async (data, signal) => {
+const signup = async (data) => {
   try {
     let res = await fetch("http://localhost:5000/auth/signup", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -10,15 +10,16 @@ const signup = async (data, signal) => {
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify(data), // body data type must match "Content-Type" header
-      signal,
     });
     if (!res.ok) {
       res = await res.json();
       throw res;
+    } else {
+      return await res.json();
     }
-    return await res.json();
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    throw error;
   }
 };
 
