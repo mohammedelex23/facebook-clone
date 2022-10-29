@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -9,517 +10,48 @@ export const Signup = () => {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
   ];
-  const [lastDay, setLastDay] = useState(28);
+  const [lastDay, setLastDay] = useState(29);
 
-  const [submitted, setSubmitted] = useState(false);
-
-  const [ready, setReady] = useState(true);
-
-  // form fileds states
-  const [name, setName] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
+  // form state
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    day: "",
+    month: "",
+    year: "",
+    gender: "",
   });
-  const [email, setEmail] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
-  });
-  const [password, setPassword] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
-  });
-  const [passwordAgain, setPasswordAgain] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
-  });
-
-  const [day, setDay] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
-  });
-  const [month, setMonth] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
-  });
-  const [year, setYear] = useState({
-    value: "",
-    error: "",
-    style: {
-      border: "1px solid black",
-    },
-  });
-
-  const [gender, setGender] = useState("male");
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
   }, [
+    formState.name,
+    formState.email,
+    formState.password,
+    formState.confirmPassword,
+    formState.day,
+    formState.month,
+    formState.year,
+    formState.gender,
     lastDay,
-    name.value,
-    name.style,
-    name.error,
-    email.value,
-    email.style,
-    password.value,
-    password.style,
-    passwordAgain.value,
-    passwordAgain.style,
-    day.value,
-    day.style,
-    month.value,
-    month.style,
-    year.value,
-    year.style,
   ]);
 
   const handleChange = (type) => (e) => {
-    switch (type) {
-      case "name":
-        setName({
-          ...name,
-          value: e.target.value,
-          style: {
-            border: "1px solid black",
-          },
-          error: "",
-        });
-        break;
-      case "email":
-        setEmail({
-          ...email,
-          value: e.target.value,
-          style: {
-            border: "1px solid black",
-          },
-          error: "",
-        });
-        break;
-      case "password":
-        setPassword({
-          ...password,
-          value: e.target.value,
-          style: {
-            border: "1px solid black",
-          },
-          error: "",
-        });
-        break;
-      case "passwordAgain":
-        setPasswordAgain({
-          ...passwordAgain,
-          value: e.target.value,
-          style: {
-            border: "1px solid black",
-          },
-          error: "",
-        });
-        break;
-      case "day":
-        setDay({
-          ...day,
-          value: e.target.value,
-          style: {
-            border: "1px solid black",
-          },
-          error: "",
-        });
-        break;
-      case "year":
-        setYear({
-          ...year,
-          value: e.target.value,
-          style: {
-            border: "1px solid black",
-          },
-          error: "",
-        });
-        break;
-      case "gender":
-        setGender(e.target.id);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleMonthSelect = (e) => {
-    let days = e.target.selectedOptions[0].getAttribute("days");
-    setLastDay(days);
-    setMonth({
-      ...month,
-      value: e.target.value,
-      style: {
-        border: "1px solid black",
-      },
-      error: "",
+    setFormState({
+      ...formState,
+      [type]: e.target.value,
     });
-  };
 
-  const handleOnBlur = (type) => (e) => {
-    switch (type) {
-      case "name":
-        if (!name.value || (name.value && !name.value.trim())) {
-          setName({
-            ...name,
-            style: {
-              border: "1px solid red",
-            },
-            error: "Name is required",
-          });
-        } else {
-          setName({
-            ...name,
-            style: {
-              border: "1px solid black",
-            },
-            error: "",
-          });
-        }
-        break;
-      case "email":
-        validateFormFields("email");
-        if (!email.value || (email.value && !email.value.trim())) {
-          setEmail({
-            ...email,
-            style: {
-              border: "1px solid red",
-            },
-            error: "Email is required",
-          });
-        } else if (
-          !new RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").test(e.target.value)
-        ) {
-          setEmail({
-            ...email,
-            style: {
-              border: "1px solid red",
-            },
-            error: "Invalid email",
-          });
-        } else {
-          setEmail({
-            ...email,
-            style: {
-              border: "1px solid black",
-            },
-            error: "",
-          });
-        }
-        break;
-      case "password":
-      case "passwordAgain":
-        validateFormFields("passwordAgain");
-        // >= 8 ==
-        if (
-          passwordAgain.value.length >= 8 &&
-          password.value.length >= 8 &&
-          password.value === passwordAgain.value
-        ) {
-          setPassword({
-            ...password,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-        }
-        // >= 8 !=
-        if (
-          passwordAgain.value.length >= 8 &&
-          password.value.length >= 8 &&
-          password.value !== passwordAgain.value
-        ) {
-          setPassword({
-            ...password,
-            error: "Password mismatch",
-            style: {
-              border: "1px solid red",
-            },
-          });
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "Password mismatch",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        }
-        if (passwordAgain.value.length < 8 && password.value.length >= 8) {
-          setPassword({
-            ...password,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-        }
-        if (password.value.length < 8 && passwordAgain.value.length >= 8) {
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-        }
-
-        // validate password
-        if (!password.value || (password.value && !password.value.trim())) {
-          setPassword({
-            ...password,
-            error: "Password is required",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        } else if (password.value.length < 8) {
-          setPassword({
-            ...password,
-            error: "Password should be 8 characters at least",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        }
-        // validate passwordagain
-        if (
-          !passwordAgain.value ||
-          (passwordAgain.value && !passwordAgain.value.trim())
-        ) {
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "Password is required",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        } else if (passwordAgain.value.length < 8) {
-          setPasswordAgain({
-            ...passwordAgain,
-            error: "Password should be 8 characters at least",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        }
-
-        break;
-      case "day":
-        if (!day.value || (day.value && !day.value.trim())) {
-          setDay({
-            ...day,
-            error: "required",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        } else {
-          setDay({
-            ...day,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-        }
-        break;
-      case "month":
-        if (!month.value || (month.value && !month.value.trim())) {
-          setMonth({
-            ...month,
-            error: "required",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        } else {
-          setMonth({
-            ...month,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-        }
-        break;
-      case "year":
-        if (!year.value || (year.value && !year.value.trim())) {
-          setYear({
-            ...year,
-            error: "required",
-            style: {
-              border: "1px solid red",
-            },
-          });
-        } else {
-          setYear({
-            ...year,
-            error: "",
-            style: {
-              border: "1px solid black",
-            },
-          });
-        }
-        break;
-      default:
-        break;
+    if (type === "month") {
+      setLastDay(e.target.value);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let ready = false;
-
-    console.log("ready", ready);
-    if (ready) {
-      try {
-        const data = {
-          name: name.value,
-          email: email.value,
-          password: password.value,
-          dateOfBirth: new Date(`${month.value}-${day.value}-${year.value}`),
-          gender,
-        };
-        setSubmitted(true);
-        let res = await authApi.signup(data);
-        if (res) {
-          console.log(res);
-          setSubmitted(false);
-        }
-      } catch (error) {
-        error.errors.forEach((error) => {
-          switch (error.name) {
-            case "name":
-              setName({
-                ...name,
-                error: error.message,
-                style: {
-                  border: "1px solid red",
-                },
-              });
-              break;
-            case "password":
-            case "email":
-              setEmail({
-                ...email,
-                error: error.message,
-                style: {
-                  border: "1px solid red",
-                },
-              });
-              break;
-            default:
-              break;
-          }
-        });
-        setSubmitted(false);
-      }
-    } else {
-      console.log("submit", ready);
-    }
-  };
-
-  // validate form fields
-  const validateFormFields = (type) => {
-    if (type === "email") {
-      // validate name
-      if (!name.value) {
-        setName({
-          ...name,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Name is required",
-        });
-      }
-    } else if (type === "password") {
-      // validate name
-      if (!name.value) {
-        setName({
-          ...name,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Name is required",
-        });
-      }
-      // validate email
-      if (!email.value) {
-        setEmail({
-          ...email,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Email is required",
-        });
-      } else if (
-        !new RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").test(email.value)
-      ) {
-        setEmail({
-          ...email,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Invalid email",
-        });
-      }
-    } else if (type === "passwordAgain") {
-      // validate name
-      if (!name.value) {
-        setName({
-          ...name,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Name is required",
-        });
-      }
-      // validate email
-      if (!email.value) {
-        setEmail({
-          ...email,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Email is required",
-        });
-      } else if (
-        !new RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").test(email.value)
-      ) {
-        setEmail({
-          ...email,
-          style: {
-            border: "1px solid red",
-          },
-          error: "Invalid email",
-        });
-      }
-    }
+    alert(JSON.stringify(formState));
   };
 
   return (
@@ -546,13 +78,11 @@ export const Signup = () => {
             name="name"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="text"
-            value={name.value}
+            value={formState.name}
             onChange={handleChange("name")}
-            style={name.style}
-            onBlur={handleOnBlur("name")}
             placeholder="Name"
+            style={{}}
           />
-          {name.error && <ErrorComp error={name.error} />}
         </div>
         {/* email */}
         <div className="flex flex-col">
@@ -563,14 +93,11 @@ export const Signup = () => {
             required
             name="email"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
-            type="text"
-            value={email.value}
+            type="email"
+            value={formState.email}
             onChange={handleChange("email")}
-            style={email.style}
-            onBlur={handleOnBlur("email")}
             placeholder="Email"
           />
-          {email.error && <ErrorComp error={email.error} />}
         </div>
         {/* password */}
         <div className="flex flex-col">
@@ -582,31 +109,25 @@ export const Signup = () => {
             name="password"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="password"
-            value={password.value}
+            value={formState.password}
             onChange={handleChange("password")}
-            style={password.style}
-            onBlur={handleOnBlur("password")}
             placeholder="Password"
           />
-          {password.error && <ErrorComp error={password.error} />}
         </div>
-        {/* password again */}
+        {/* confirm password */}
         <div className="flex flex-col">
           <label className="font-bold" htmlFor="password again">
-            Password again
+            Confirm Password
           </label>
           <input
             required
             name="passwordAgain"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="password"
-            value={passwordAgain.value}
-            onChange={handleChange("passwordAgain")}
-            style={passwordAgain.style}
-            onBlur={handleOnBlur("passwordAgain")}
+            value={formState.confirmPassword}
+            onChange={handleChange("confirmPassword")}
             placeholder="Password again"
           />
-          {passwordAgain.error && <ErrorComp error={passwordAgain.error} />}
         </div>
         {/* date of birth */}
         <div className="mb-2">
@@ -620,10 +141,8 @@ export const Signup = () => {
                 required
                 className="border border-black p-1"
                 name="day"
-                value={day.value}
+                value={formState.day}
                 onChange={handleChange("day")}
-                style={day.style}
-                onBlur={handleOnBlur("day")}
               >
                 <option value="">select</option>
                 {lastDay > 0 &&
@@ -631,59 +150,31 @@ export const Signup = () => {
                     .slice(0, lastDay)
                     .map((day, index) => <option key={index}>{day}</option>)}
               </select>
-              {day.error && <ErrorComp error={day.error} />}
             </div>
             {/* month */}
             <div className="flex flex-col">
               <label htmlFor="month">Month</label>
               <select
                 required
-                onChange={handleMonthSelect}
+                onChange={handleChange("month")}
                 className="border border-black p-1"
                 name="month"
-                value={month.value}
-                style={month.style}
-                onBlur={handleOnBlur("month")}
+                value={formState.month}
               >
                 <option value="">select</option>
-                <option days={31} value="1">
-                  Janaury
-                </option>
-                <option days={29} value="2">
-                  February
-                </option>
-                <option days={31} value="3">
-                  March
-                </option>
-                <option days={30} value="4">
-                  April
-                </option>
-                <option days={31} value="5">
-                  May
-                </option>
-                <option days={30} value="6">
-                  June
-                </option>
-                <option days={31} value="7">
-                  July
-                </option>
-                <option days={31} value="8">
-                  August
-                </option>
-                <option days={30} value="9">
-                  September
-                </option>
-                <option days={31} value="10">
-                  October
-                </option>
-                <option days={30} value="11">
-                  November
-                </option>
-                <option days={31} value="12">
-                  December
-                </option>
+                <option value={31}>Janaury</option>
+                <option value={29}>February</option>
+                <option value={31}>March</option>
+                <option value={30}>April</option>
+                <option value={31}>May</option>
+                <option value={30}>June</option>
+                <option value={31}>July</option>
+                <option value={31}>August</option>
+                <option value={30}>September</option>
+                <option value={31}>October</option>
+                <option value={30}>November</option>
+                <option value={31}>December</option>
               </select>
-              {month.error && <ErrorComp error={month.error} />}
             </div>
             {/* year */}
             <div className="flex flex-col">
@@ -692,10 +183,8 @@ export const Signup = () => {
                 required
                 className="border border-black p-1"
                 name="year"
-                value={year.value}
+                value={formState.year}
                 onChange={handleChange("year")}
-                style={year.style}
-                onBlur={handleOnBlur("year")}
               >
                 <option value="">select</option>
                 <option value="1940">1940</option>
@@ -782,7 +271,6 @@ export const Signup = () => {
                 <option value="2021">2021</option>
                 <option value="2022">2022</option>
               </select>
-              {year.error && <ErrorComp error={year.error} />}
             </div>
           </div>
         </div>
@@ -799,9 +287,11 @@ export const Signup = () => {
               <span>Male</span>
               <input
                 onChange={handleChange("gender")}
+                value="male"
                 id="male"
                 name="radio"
                 type="radio"
+                radiovalue="male"
                 checked
               />
             </label>
@@ -812,17 +302,18 @@ export const Signup = () => {
               <span>Female</span>
               <input
                 onChange={handleChange("gender")}
+                value="female"
                 id="female"
                 name="radio"
                 type="radio"
+                radiovalue="female"
               />
             </label>
           </div>
         </div>
         {/* signup button */}
         <div>
-          {submitted ? (
-            <button
+          {/* <button
               type="button"
               className="mt-2 inline-flex items-center flex justify-center px-3 py-1 text-sm font-semibold leading-6 text-white transition duration-150 ease-in-out bg-green-400 rounded w-full shadow cursor-not-allowed hover:bg-green-600"
               disabled=""
@@ -848,16 +339,14 @@ export const Signup = () => {
                 ></path>
               </svg>
               Signing up...
-            </button>
-          ) : (
-            <button
-              className="mt-2 bg-green-600 shadow-sm rounded text-lg text-white px-3 py-1 w-full"
-              type="submit"
-              disabled={ready}
-            >
-              Sign up
-            </button>
-          )}
+            </button> */}
+
+          <button
+            className="mt-2 bg-green-600 shadow-sm rounded text-lg text-white px-3 py-1 w-full"
+            type="submit"
+          >
+            Sign up
+          </button>
         </div>
         {/* break */}
         <div className="my-5 flex justify-between gap-3 items-center">
