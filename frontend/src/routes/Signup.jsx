@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import authApi from "../api/authApi";
 import { ErrorComp } from "../components/ErrorComp";
-import { useSignupForm } from "../components/hooks/useSignupForm";
+import { useSignupFormValidator } from "../components/hooks/useSignupFormValidator";
 
 export const Signup = () => {
   const days = [
@@ -25,7 +25,8 @@ export const Signup = () => {
     gender: "",
   });
 
-  const { errors, handleOnBlur, validateFormFields } = useSignupForm(formState);
+  const { errors, handleOnBlur, handleOnChange, validateFormFields } =
+    useSignupFormValidator(formState);
 
   // useEffect(() => {
   //   // window.scrollTo(0, 0);
@@ -42,14 +43,21 @@ export const Signup = () => {
   // ]);
 
   const handleChange = (type) => (e) => {
-    setFormState({
+    let nextFormState = {
       ...formState,
       [type]: e.target.value,
-    });
+    };
+
+    setFormState(nextFormState);
 
     if (type === "month") {
       setLastDay(e.target.value);
     }
+    validateFormFields({
+      errors,
+      formState: nextFormState,
+      field: e.target.name,
+    });
   };
 
   const handleSubmit = (e) => {

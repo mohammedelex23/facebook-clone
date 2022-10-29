@@ -7,7 +7,7 @@ import {
   confirmPasswordValidator,
 } from "../../validation/formValidators";
 
-export const useSignupForm = (formState) => {
+export const useSignupFormValidator = (formState) => {
   const errorStyle = {
     border: "1px solid red",
   };
@@ -165,9 +165,25 @@ export const useSignupForm = (formState) => {
     validateFormFields({ formState, errors: updatedErrors, field });
   };
 
+  const handleOnChange = (e) => {
+    let field = e.target.name;
+    // if (errors[field].dirty) return;
+
+    const updatedErrors = {
+      ...errors,
+      [field]: {
+        ...errors[field],
+        dirty: true,
+      },
+    };
+
+    validateFormFields({ formState, errors: updatedErrors, field });
+  };
+
   return {
     errors,
     validateFormFields,
     handleOnBlur,
+    handleOnChange,
   };
 };
