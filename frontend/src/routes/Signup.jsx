@@ -93,6 +93,7 @@ export const Signup = () => {
             Name
           </label>
           <input
+            autoComplete="off"
             name="name"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="text"
@@ -110,6 +111,7 @@ export const Signup = () => {
             Email
           </label>
           <input
+            autoComplete="off"
             name="email"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="text"
@@ -129,6 +131,7 @@ export const Signup = () => {
             Password
           </label>
           <input
+            autoComplete="off"
             name="password"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="password"
@@ -148,6 +151,7 @@ export const Signup = () => {
             Confirm Password
           </label>
           <input
+            autoComplete="off"
             name="confirmPassword"
             className="border border-black shadow-sm rounded border w-full mb-2  p-2"
             type="password"
@@ -165,9 +169,9 @@ export const Signup = () => {
         <div className="mb-2">
           {/* title */}
           <h3 className="font-bold">Date of Birth</h3>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between gap-x-2 items-center">
             {/* day */}
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-1">
               <label htmlFor="day">Day</label>
               <select
                 className="border border-black p-1"
@@ -188,7 +192,7 @@ export const Signup = () => {
               ) : null}
             </div>
             {/* month */}
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-1">
               <label htmlFor="month">Month</label>
               <select
                 onChange={handleChange("month")}
@@ -217,7 +221,7 @@ export const Signup = () => {
               ) : null}
             </div>
             {/* year */}
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-1">
               <label htmlFor="year">Year</label>
               <select
                 className="border border-black p-1"
@@ -330,6 +334,7 @@ export const Signup = () => {
             >
               <span>Male</span>
               <input
+                autoComplete="off"
                 onChange={handleChange("gender")}
                 value="male"
                 id="male"
@@ -346,6 +351,7 @@ export const Signup = () => {
             >
               <span>Female</span>
               <input
+                autoComplete="off"
                 onChange={handleChange("gender")}
                 value="female"
                 id="female"
