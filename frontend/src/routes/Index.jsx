@@ -87,7 +87,7 @@ export const Index = () => {
                     value={formState.password}
                     onChange={handleChange("password")}
                     onBlur={handleOnBlur}
-                    style={errors.email.style}
+                    style={errors.password.style}
                   />
                   {errors.password.error ? (
                     <ErrorComp error={errors.password.message} />

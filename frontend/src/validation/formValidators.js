@@ -16,13 +16,17 @@ const emailValidator = (email) => {
 };
 
 const passwordValidator = (password) => {
-  let regex = new RegExp("[0-9]|[A-Z]");
+  let uppercaseRegex = new RegExp("[A-Z]");
+  let numberRegex = new RegExp("[0-9]");
+
   if (!password || (password && !password.trim())) {
     return "Password is required *";
   } else if (password.length < 8) {
     return "Password is less than 8 characters";
-  } else if (!regex.test(password)) {
-    return "Password should contain at least one uppercase(A, B or Z) letter and one number(1,2 or 9";
+  } else if (!uppercaseRegex.test(password)) {
+    return "Password must contain one uppercase letter *";
+  } else if (!numberRegex.test(password)) {
+    return "Password must contain one number *";
   }
 
   return "";

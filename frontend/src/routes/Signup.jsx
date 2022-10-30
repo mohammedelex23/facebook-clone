@@ -95,7 +95,7 @@ export const Signup = () => {
           <input
             autoComplete="off"
             name="name"
-            className="border border-black shadow-sm rounded border w-full mb-2  p-2"
+            className="border border-black shadow-sm rounded border w-full  p-2"
             type="text"
             value={formState.name}
             onChange={handleChange("name")}
@@ -113,7 +113,7 @@ export const Signup = () => {
           <input
             autoComplete="off"
             name="email"
-            className="border border-black shadow-sm rounded border w-full mb-2  p-2"
+            className="border border-black shadow-sm rounded border w-full   p-2"
             type="text"
             value={formState.email}
             onChange={handleChange("email")}
@@ -133,7 +133,7 @@ export const Signup = () => {
           <input
             autoComplete="off"
             name="password"
-            className="border border-black shadow-sm rounded border w-full mb-2  p-2"
+            className="border border-black shadow-sm rounded border w-full p-2"
             type="password"
             value={formState.password}
             onChange={handleChange("password")}
@@ -153,7 +153,7 @@ export const Signup = () => {
           <input
             autoComplete="off"
             name="confirmPassword"
-            className="border border-black shadow-sm rounded border w-full mb-2  p-2"
+            className="border border-black shadow-sm rounded border w-full p-2"
             type="password"
             value={formState.confirmPassword}
             onChange={handleChange("confirmPassword")}
