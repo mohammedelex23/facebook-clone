@@ -16,7 +16,7 @@ module.exports = function sendEmail(email, userId, name, cb) {
     html: `<html>
         <p>Hello ${name},</p>
         <p>Welcome to Facebook! Before you can begin using your account, you need to activate it using the below link:</p>
-        <a href="http://localhost:5000/auth/signup/verify/${userId}">http://localhost:5000/auth/signup/verify/${userId}</a>
+        <a style="color:blue;font-size:18px;font-weight:bold" href="http://localhost:3000/verify?id=${userId}">Verify account</a>
         </html>`,
   };
   transporter.sendMail(mailOptions, cb);

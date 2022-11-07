@@ -42,22 +42,25 @@ const login = async function (req, res, next) {
       email: req.body.email,
     }).select("-photo");
     if (!user) {
-      const err = new Error("this email is not registered");
-      err.statusCode = 401;
-      return next(err);
+      return res.status(401).json({
+        type: "NotRegisteredError",
+        message: "this email is not registered",
+      });
     }
     let valid = await user.isValidPassword(req.body.password, user.password);
     if (!valid) {
-      const err = new Error("invalid email or password");
-      err.statusCode = 401;
-      return next(err);
+      return res.status(401).json({
+        type: "InvalidError",
+        message: "invalid email or password",
+      });
     }
     if (!user.isVerified) {
-      const err = new Error(
-        "your account is not verified yet, check your email for verification."
-      );
-      err.statusCode = 401;
-      return next(err);
+      return res.status(403).json({
+        type: "NotVerified",
+        userId: user._id,
+        message:
+          "your account is not verified yet, check your email for verification.",
+      });
     }
     user.password = undefined;
     const token = await getToken(user._id, user.isAdmin);
@@ -75,9 +78,10 @@ const verifySignup = async function (req, res, next) {
     );
     // return error if user is not found
     if (!user) {
-      const err = new Error("user is not found");
-      err.statusCode = 404;
-      return next(err);
+      return res.status(400).json({
+        type: "UserNotFound",
+        message: "user is not found",
+      });
     }
     // modify user isVerified
     user.isVerified = true;

@@ -1,14 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import authApi from "../api/authApi";
 import { ErrorComp } from "../components/ErrorComp";
 import { useLoginFormValidator } from "../components/hooks/useLoginFormValidator";
-export const Index = () => {
+import authHelpers from "../helpers/authHelpers";
+
+export const Login = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [formState, setFormState] = useState({
     email: "",
     password: "",
   });
 
-  const { errors, handleOnBlur, validateFormFields, handleOnChange } =
+  const [apiError, setApiError] = useState({
+    type: "",
+    message: "",
+  });
+
+  const { errors, handleOnBlur, validateFormFields } =
     useLoginFormValidator(formState);
 
   const handleChange = (type) => (e) => {
@@ -25,7 +35,16 @@ export const Index = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleOnFocus = (e) => {
+    if (apiError.type === "NotRegisteredError") {
+      setApiError({
+        type: "",
+        message: "",
+      });
+    }
+  };
+  /////////////////////////////////
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { isValid } = validateFormFields({
@@ -35,7 +54,30 @@ export const Index = () => {
     });
 
     if (!isValid) return;
-    console.log("success submit");
+
+    // call the /login api endpoint
+    try {
+      let user = await authApi.login({
+        email: formState.email,
+        password: formState.password,
+      });
+      // save the token to local storage: token
+      authHelpers.authenticateUser(user.token);
+      // redirect user to home page or previous route he came from
+      location.state ? navigate(location.state) : navigate("/home");
+    } catch (error) {
+      if (error.type === "NotVerified") {
+        // redirect to verify page
+        navigate(`/verfyAccount?id=${error.userId}`);
+      } else if (error.type) {
+        setApiError(error);
+      } else {
+        setApiError({
+          type: "ServerError",
+          message: "Something went wrong!, try again",
+        });
+      }
+    }
   };
 
   return (
@@ -60,6 +102,13 @@ export const Index = () => {
             <div className="md:shadow-xl md:p-5 md:rounded-md md:bg-white">
               {/* form */}
               <form className="w-full" action="" onSubmit={handleSubmit}>
+                {/* Error */}
+                {(apiError.type === "InvalidError" ||
+                  apiError.type === "ServerError") && (
+                  <div className="text-center text-lg mb-2">
+                    <ErrorComp error={apiError.message} />
+                  </div>
+                )}
                 {/* email */}
                 <div className="flex flex-col mb-2">
                   <input
@@ -69,12 +118,17 @@ export const Index = () => {
                     placeholder="Email"
                     value={formState.email}
                     onChange={handleChange("email")}
+                    onFocus={handleOnFocus}
                     onBlur={handleOnBlur}
                     style={errors.email.style}
                   />
                   {errors.email.error ? (
                     <ErrorComp error={errors.email.message} />
                   ) : null}
+                  {/* api error */}
+                  {apiError.type === "NotRegisteredError" && (
+                    <ErrorComp error={apiError.message} />
+                  )}
                 </div>
                 {/* password */}
                 <div className="flex flex-col mb-2">
@@ -121,7 +175,7 @@ export const Index = () => {
       </div>
 
       {/* footer */}
-      <footer className="mb-2 text-center">Facebook-Clone &copy; 2022</footer>
+      <footer className="pb-2 text-center">Facebook-Clone &copy; 2022</footer>
     </div>
   );
 };

@@ -23,9 +23,10 @@ const getOneUser = async function (req, res, next) {
     );
 
     if (!user) {
-      const err = new Error("user is not found");
-      err.statusCode = 404;
-      return next(err);
+      return res.status(400).json({
+        type: "UserNotFound",
+        message: "user is not found",
+      });
     }
     res.status(200).json(user);
   } catch (error) {

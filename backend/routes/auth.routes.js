@@ -8,7 +8,7 @@ router.post("/signup", authCtrl.signup);
 router.post("/login", validateLogin, authCtrl.login);
 
 // verify signup
-router.post("/signup/verify/:userId", authCtrl.verifySignup);
+router.put("/signup/verify/:userId", authCtrl.verifySignup);
 
 router.post("/resendmail", authCtrl.resendMail);
 

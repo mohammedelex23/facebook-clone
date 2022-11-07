@@ -1,7 +1,5 @@
-import { useMemo } from "react";
-import { useEffect } from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
 import { ErrorComp } from "../components/ErrorComp";
 import { useSignupFormValidator } from "../components/hooks/useSignupFormValidator";
@@ -22,25 +20,24 @@ export const Signup = () => {
     day: "",
     month: "",
     year: "",
-    gender: "",
+    gender: "male",
+  });
+
+  // api errors
+  const [apiErrors, setApiErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
   });
 
   const { errors, handleOnBlur, handleOnChange, validateFormFields } =
     useSignupFormValidator(formState);
 
+  const navigate = useNavigate();
+
   // useEffect(() => {
   //   // window.scrollTo(0, 0);
-  // }, [
-  //   formState.name,
-  //   formState.email,
-  //   formState.password,
-  //   formState.confirmPassword,
-  //   formState.day,
-  //   formState.month,
-  //   formState.year,
-  //   formState.gender,
-  //   lastDay,
-  // ]);
+  // }, [error, isLoading]);
 
   const handleChange = (type) => (e) => {
     let nextFormState = {
@@ -51,7 +48,11 @@ export const Signup = () => {
     setFormState(nextFormState);
 
     if (type === "month") {
-      setLastDay(e.target.value);
+      const index = e.target.selectedIndex;
+      const el = e.target.childNodes[index];
+      const id = el.getAttribute("id");
+
+      setLastDay(id);
     }
     validateFormFields({
       errors,
@@ -60,7 +61,7 @@ export const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { isValid } = validateFormFields({
@@ -70,7 +71,32 @@ export const Signup = () => {
     });
 
     if (!isValid) return;
-    console.log("success submit");
+    try {
+      let data = {
+        name: formState.name,
+        email: formState.email,
+        password: formState.password,
+        gender: formState.gender,
+        dateOfBirth: new Date(
+          `${formState.day}:${formState.month}:${formState.year}`
+        ),
+      };
+      let user = await authApi.signup(data);
+      if (user) {
+        console.log(user);
+        navigate(`/check_email?id=${user._id}`, { replace: true });
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.type == "ValidationError") {
+        error.errors.forEach((error) => {
+          setApiErrors({
+            ...apiErrors,
+            [error.name]: error.message,
+          });
+        });
+      }
+    }
   };
 
   return (
@@ -103,7 +129,8 @@ export const Signup = () => {
             style={errors.name.style}
             onBlur={handleOnBlur}
           />
-          {errors.name.error ? <ErrorComp error={errors.name.message} /> : null}
+          {errors.name.error && <ErrorComp error={errors.name.message} />}
+          {apiErrors.name && <ErrorComp error={apiErrors.name} />}
         </div>
         {/* email */}
         <div className="flex flex-col">
@@ -121,9 +148,8 @@ export const Signup = () => {
             onBlur={handleOnBlur}
             style={errors.email.style}
           />
-          {errors.email.error ? (
-            <ErrorComp error={errors.email.message} />
-          ) : null}
+          {errors.email.error && <ErrorComp error={errors.email.message} />}
+          {apiErrors.email && <ErrorComp error={apiErrors.email} />}
         </div>
         {/* password */}
         <div className="flex flex-col">
@@ -203,18 +229,42 @@ export const Signup = () => {
                 style={errors.month.style}
               >
                 <option value="">select</option>
-                <option value={31}>Janaury</option>
-                <option value={29}>February</option>
-                <option value={31}>March</option>
-                <option value={30}>April</option>
-                <option value={31}>May</option>
-                <option value={30}>June</option>
-                <option value={31}>July</option>
-                <option value={31}>August</option>
-                <option value={30}>September</option>
-                <option value={31}>October</option>
-                <option value={30}>November</option>
-                <option value={31}>December</option>
+                <option id={31} value="1">
+                  Janaury
+                </option>
+                <option id={29} value="2">
+                  February
+                </option>
+                <option id={31} value="3">
+                  March
+                </option>
+                <option id={30} value="4">
+                  April
+                </option>
+                <option id={31} value="5">
+                  May
+                </option>
+                <option id={30} value="6">
+                  June
+                </option>
+                <option id={31} value="7">
+                  July
+                </option>
+                <option id={31} value="8">
+                  August
+                </option>
+                <option id={30} value="9">
+                  September
+                </option>
+                <option id={31} value="10">
+                  October
+                </option>
+                <option id={30} value="11">
+                  November
+                </option>
+                <option id={31} value="12">
+                  December
+                </option>
               </select>
               {errors.month.error ? (
                 <ErrorComp error={errors.month.message} />
@@ -394,7 +444,7 @@ export const Signup = () => {
             </button> */}
 
           <button
-            className="mt-2 bg-green-600 shadow-sm rounded text-lg text-white px-3 py-1 w-full"
+            className="mt-3 bg-green-600 shadow-sm rounded text-lg text-white px-3 py-1 w-full"
             type="submit"
           >
             Sign up
@@ -413,7 +463,9 @@ export const Signup = () => {
         </div>
       </form>
       {/* footer */}
-      <footer className="m-2 text-center">Facebook-Clone &copy; 2022</footer>
+      <footer className="mt-[30px] pb-2 text-center">
+        Facebook-Clone &copy; 2022
+      </footer>
     </div>
   );
 };

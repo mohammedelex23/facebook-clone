@@ -106,7 +106,6 @@ userSchema.pre("save", async function (next) {
 
 //////////////// decrypt password //////////
 userSchema.methods.isValidPassword = async function (password, hash) {
-  return true;
   try {
     return await bcrypt.compare(password, hash);
   } catch (error) {

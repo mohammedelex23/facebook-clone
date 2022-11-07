@@ -9,7 +9,7 @@ router.put("/:userId/incomingRequests", authenticateUser);
 
 router
   .route("/:userId")
-  .get(authenticateUser, userCtrl.getOneUser)
+  .get(userCtrl.getOneUser)
   .put(authenticateUser, userCtrl.updateUser)
   .delete(authenticateUser, userCtrl.deleteUser);
 
@@ -18,10 +18,13 @@ router
   .route("/:userId/photo")
   .get(
     // authenticateUser,
-     userCtrl.getUserPhoto, userCtrl.defaultImage)
+    userCtrl.getUserPhoto,
+    userCtrl.defaultImage
+  )
   .put(
-    // authenticateUser, 
-    userCtrl.uploadPhoto);
+    // authenticateUser,
+    userCtrl.uploadPhoto
+  );
 
 // send friendship request
 router.put(
