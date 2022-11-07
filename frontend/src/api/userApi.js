@@ -1,6 +1,6 @@
 const getUser = async (userId) => {
   try {
-    let res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+    let res = await fetch(`/api/users/${userId}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       // mode: 'cors', // no-cors, *cors, same-origin
       // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

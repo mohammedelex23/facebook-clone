@@ -1,6 +1,6 @@
 const signup = async (data) => {
   try {
-    let res = await fetch("http://localhost:5000/auth/signup", {
+    let res = await fetch("/auth/signup", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       // mode: 'cors', // no-cors, *cors, same-origin
       // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -25,7 +25,7 @@ const signup = async (data) => {
 
 const login = async (data) => {
   try {
-    let res = await fetch("http://localhost:5000/auth/login", {
+    let res = await fetch("/auth/login", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       // mode: 'cors', // no-cors, *cors, same-origin
       // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -50,7 +50,7 @@ const login = async (data) => {
 
 const verifyUser = async (id) => {
   try {
-    let res = await fetch(`http://localhost:5000/auth/signup/verify/${id}`, {
+    let res = await fetch(`/auth/signup/verify/${id}`, {
       method: "PUT", // *GET, POST, PUT, DELETE, etc.
       // mode: 'cors', // no-cors, *cors, same-origin
       // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

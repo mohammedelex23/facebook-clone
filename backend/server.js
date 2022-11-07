@@ -15,12 +15,13 @@ connectToMongoDB();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000,https://facebook-clone02.herokuapp.com",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   })
+// );
 app.use(morgan("dev"));
 app.use(express.json());
 
