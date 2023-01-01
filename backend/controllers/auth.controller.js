@@ -24,7 +24,7 @@ const signup = async function (req, res, next) {
     // send confirmation email
     sendEmail(req.body.email, newUser._id, newUser.name, function (err, info) {
       if (err || info) {
-        console.log(err || info);
+        // console.log(err || info);
       }
       res.end();
     });
@@ -94,21 +94,20 @@ const verifySignup = async function (req, res, next) {
 
 const resendMail = async function (req, res, next) {
   try {
-    const email = req.body.email;
-    const user = await User.findOne({ email }).select("-photo -password");
+    const userId = req.params.userId;
+    const user = await User.findById(userId).select("_id name email");
     if (!user) {
-      const err = new Error("this email is not registered");
+      const err = new Error("user is not found");
       err.statusCode = 401;
       return next(err);
     }
 
     // send confirmation email
-    sendEmail(req.body.email, user._id, user.name, function (err, info) {
+    sendEmail(user.email, user._id, user.name, function (err, info) {
       if (err) {
-        console.log("Email sent: " + err);
+        return next(err);
       } else {
-        console.log(info);
-        res.end();
+        // console.log(info);
       }
     });
   } catch (error) {

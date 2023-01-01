@@ -1,4 +1,42 @@
+import authApi from "../api/authApi";
+import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
+
 export const AfterSignup = () => {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+
+  const [values, setValues] = useState({
+    btnDisabled: false,
+    btnCursor: "pointer",
+  });
+
+  const changeBtnStatus = (action) => {
+    if (action === "disable") {
+      setValues({
+        ...values,
+        btnDisabled: true,
+        btnCursor: "not-allowed",
+      });
+    } else {
+      setValues({
+        ...values,
+        btnDisabled: false,
+        btnCursor: "pointer",
+      });
+    }
+  };
+
+  const handleClick = async (e) => {
+    try {
+      changeBtnStatus("disable");
+      await authApi.resendMail(id);
+      changeBtnStatus("enable");
+    } catch (err) {
+      changeBtnStatus("enable");
+    }
+  };
+
   return (
     <div>
       <h1 className="text-[2rem] text-center mt-4 font-bold text-blue-700 lg:text-[3rem]">
@@ -18,8 +56,15 @@ export const AfterSignup = () => {
           </small>
         </p>
         <div>
-          <button className="block mx-auto bg-blue-600 text-white rounded-sm px-3 py-1">
-            Resend mail
+          <button
+            disabled={values.btnDisabled}
+            onClick={handleClick}
+            style={{
+              cursor: values.btnCursor,
+            }}
+            className="block mx-auto bg-blue-600 text-white rounded-sm px-3 py-1"
+          >
+            {values.btnDisabled ? "sending..." : "Resend mail"}
           </button>
         </div>
       </div>

@@ -6,7 +6,7 @@ export default function ErrorPage() {
   const error = useRouteError();
 
   return (
-    <div className="text-center mt-16">
+    <div className="text-center pt-16">
       <h1 className="font-bold text-lg my-3">Oops!</h1>
       <p className=" my-3">Sorry, an unexpected error has occurred.</p>
       <p className="mb-2 text-gray-500">

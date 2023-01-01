@@ -62,5 +62,9 @@ router.get(
 );
 
 // get friends
-router.get("/:userId/friends", authenticateUser, userCtrl.getFriends);
+router.get(
+  "/:userId/friends",
+  // authenticateUser,
+  userCtrl.getFriends
+);
 module.exports = router;

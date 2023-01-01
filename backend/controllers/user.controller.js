@@ -8,7 +8,21 @@ const mongoose = require("mongoose");
 //////////////////////////////////////////////////////////////////////////////////
 const allUsers = async function (req, res, next) {
   try {
-    const users = await User.find({}).select("-password -photo");
+    // check if there is a search query
+    let users;
+    let searchQuery = req.query.search;
+    if (searchQuery && searchQuery.trim()) {
+      searchQuery = searchQuery.trim();
+      users = await User.find({
+        $or: [
+          { name: { $regex: new RegExp(searchQuery, "i") } },
+          { email: { $regex: new RegExp(searchQuery, "i") } },
+        ],
+      }).select("name email");
+    } else {
+      users = await User.find({}).select("name email");
+    }
+
     res.status(200).json(users);
   } catch (error) {
     next(error);
@@ -18,9 +32,13 @@ const allUsers = async function (req, res, next) {
 //////////////////////////////////////////////////////////////////////////////////
 const getOneUser = async function (req, res, next) {
   try {
-    let user = await User.findById(req.params.userId).select(
-      "-password -photo"
-    );
+    let query = req.query;
+    let user;
+    if (query.name) {
+      user = await User.findById(req.params.userId).select("name");
+    } else {
+      user = await User.findById(req.params.userId).select("-photo -password");
+    }
 
     if (!user) {
       return res.status(400).json({
@@ -157,7 +175,6 @@ const getUserPhoto = async function (req, res, next) {
 
 //////////////////////////////////////////////////////////////////////////////////
 const defaultImage = function (req, res, next) {
-  console.log(process.cwd());
   let imagePath = path.join(
     process.cwd(),
     "backend",
@@ -165,7 +182,6 @@ const defaultImage = function (req, res, next) {
     "images",
     "user.png"
   );
-  console.log(imagePath);
   return res.sendFile(imagePath);
 };
 
@@ -208,9 +224,7 @@ const sendFriendshipRequest = async function (req, res, next) {
       return next(err);
     }
     // check receiverId on incoming and outgoing friendship in user
-    const user = await User.findById(userId).select(
-      "incommingRequests outgoingRequests friends"
-    );
+    let user = await User.findById(userId).select("-photo -password");
 
     // check receiverId on friends
     if (user.friends.includes(receiverId)) {
@@ -246,6 +260,9 @@ const sendFriendshipRequest = async function (req, res, next) {
           $push: {
             outgoingRequests: receiverId,
           },
+        },
+        {
+          new: true,
         }
       );
       // add userId to receiverId incommingRequests
@@ -262,7 +279,8 @@ const sendFriendshipRequest = async function (req, res, next) {
     });
     session.endSession();
     res.status(200).json({
-      message: `Successfully sent friendship request to: ${receiverId}`,
+      userId: receiverId,
+      type: "send",
     });
   } catch (error) {
     next(error);
@@ -280,7 +298,7 @@ const acceptFriendshipRequest = async function (req, res, next) {
     }
     const userId = req.params.userId;
     const requestId = req.body.requestId;
-    const user = await User.findById(userId).select("-photo -password");
+    let user = await User.findById(userId).select("-photo -password");
 
     // check requestId in userId friends list
     if (user.friends.includes(requestId)) {
@@ -332,7 +350,8 @@ const acceptFriendshipRequest = async function (req, res, next) {
     });
     session.endSession();
     res.status(200).json({
-      message: `Successfully accepted friendship request from: ${requestId}`,
+      userId: requestId,
+      type: "accept",
     });
   } catch (error) {
     next(error);
@@ -350,7 +369,7 @@ const cancelFriendshipRequest = async function (req, res, next) {
     }
     const userId = req.params.userId;
     const receiverId = req.body.receiverId;
-    const user = await User.findById(userId).select("-photo -password");
+    let user = await User.findById(userId).select("-photo -password");
 
     // check receiverId in userId outgoing
     if (!user.outgoingRequests.includes(receiverId)) {
@@ -388,7 +407,8 @@ const cancelFriendshipRequest = async function (req, res, next) {
     });
     session.endSession();
     res.status(200).json({
-      message: `Successfully canceled friendship request of receiverId: ${receiverId}`,
+      userId: receiverId,
+      type: "cancel",
     });
   } catch (error) {
     next(error);
@@ -406,11 +426,12 @@ const deleteFriendshipRequest = async function (req, res, next) {
     }
     const userId = req.params.userId;
     const requestId = req.body.requestId;
-    const user = await User.findById(userId).select("-photo -password");
-
-    // check requestId in userId incomming
-    if (!user.incommingRequests.includes(requestId)) {
+    let user = await User.findById(userId).select("-photo -password");
+    // check requestId in userId friends
+    if (!user.friends.includes(requestId)) {
       const err = new Error("invalid or incorrect requestId");
+      console.log(req.body);
+
       err.statusCode = 400;
       return next(err);
     }
@@ -425,7 +446,7 @@ const deleteFriendshipRequest = async function (req, res, next) {
         },
         {
           $pull: {
-            incommingRequests: requestId,
+            friends: requestId,
           },
         }
       );
@@ -437,14 +458,15 @@ const deleteFriendshipRequest = async function (req, res, next) {
         },
         {
           $pull: {
-            outgoingRequests: userId,
+            friends: userId,
           },
         }
       );
     });
     session.endSession();
     res.status(200).json({
-      message: `Successfully deleted incomming friendship request from requestId: ${requestId}`,
+      userId: requestId,
+      type: "remove",
     });
   } catch (error) {
     next(error);
@@ -456,11 +478,13 @@ const getIncommingFriendshipRequests = async function (req, res, next) {
   try {
     const user = await User.findById(req.params.userId)
       .select("incommingRequests")
-      .populate("friends", "name")
+      .populate("incommingRequests", "name")
       .exec();
     let incommingRequests = user.incommingRequests;
     res.status(200).json(incommingRequests);
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -472,7 +496,9 @@ const getFriends = async function (req, res, next) {
       .exec();
     let friends = user.friends;
     res.status(200).json(friends);
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {

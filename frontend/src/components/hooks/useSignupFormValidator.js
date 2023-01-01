@@ -83,7 +83,7 @@ export const useSignupFormValidator = (formState) => {
     const { name, email, password, confirmPassword, day, month, year } =
       formState;
 
-    if (nextErrors.name.dirty && (field ? field == "name" : true)) {
+    if (nextErrors.name.dirty && (field ? field === "name" : true)) {
       let errorMessage = nameValidator(name);
       nextErrors.name.error = !!errorMessage;
       nextErrors.name.message = errorMessage;
@@ -91,7 +91,7 @@ export const useSignupFormValidator = (formState) => {
       if (!!errorMessage) isValid = false;
     }
 
-    if (nextErrors.email.dirty && (field ? field == "email" : true)) {
+    if (nextErrors.email.dirty && (field ? field === "email" : true)) {
       let errorMessage = emailValidator(email);
       nextErrors.email.error = !!errorMessage;
       nextErrors.email.message = errorMessage;
@@ -99,7 +99,7 @@ export const useSignupFormValidator = (formState) => {
       if (!!errorMessage) isValid = false;
     }
 
-    if (nextErrors.password.dirty && (field ? field == "password" : true)) {
+    if (nextErrors.password.dirty && (field ? field === "password" : true)) {
       let errorMessage = passwordValidator(password);
       nextErrors.password.error = !!errorMessage;
       nextErrors.password.message = errorMessage;
@@ -118,7 +118,7 @@ export const useSignupFormValidator = (formState) => {
       if (!!errorMessage) isValid = false;
     }
 
-    if (nextErrors.day.dirty && (field ? field == "day" : true)) {
+    if (nextErrors.day.dirty && (field ? field === "day" : true)) {
       let errorMessage = dateOfBirthValidator(day);
       nextErrors.day.error = !!errorMessage;
       nextErrors.day.message = errorMessage;
@@ -126,7 +126,7 @@ export const useSignupFormValidator = (formState) => {
       if (!!errorMessage) isValid = false;
     }
 
-    if (nextErrors.month.dirty && (field ? field == "month" : true)) {
+    if (nextErrors.month.dirty && (field ? field === "month" : true)) {
       let errorMessage = dateOfBirthValidator(month);
       nextErrors.month.error = !!errorMessage;
       nextErrors.month.message = errorMessage;
@@ -134,7 +134,7 @@ export const useSignupFormValidator = (formState) => {
       if (!!errorMessage) isValid = false;
     }
 
-    if (nextErrors.year.dirty && (field ? field == "year" : true)) {
+    if (nextErrors.year.dirty && (field ? field === "year" : true)) {
       let errorMessage = dateOfBirthValidator(year);
       nextErrors.year.error = !!errorMessage;
       nextErrors.year.message = errorMessage;

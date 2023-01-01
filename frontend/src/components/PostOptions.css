@@ -1,0 +1,10 @@
+#post_options {
+  /* visibility: hidden; */
+}
+.options {
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.options li:hover {
+  background-color: lightgray;
+}

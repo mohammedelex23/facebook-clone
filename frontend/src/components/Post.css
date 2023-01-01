@@ -1,0 +1,14 @@
+.elipsis {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+.elipsis span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: black;
+  display: block;
+}

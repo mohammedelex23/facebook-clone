@@ -1,5 +1,5 @@
 require("dotenv").config();
-const express = require("express");
+
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
@@ -8,20 +8,20 @@ const userRouter = require("./routes/user.routes");
 const authRouter = require("./routes/auth.routes");
 const postRouter = require("./routes/post.routes");
 const commentRouter = require("./routes/comment.routes");
+const convRouter = require("./routes/conversation.routes");
+
+const { app, express } = require("./socket");
 
 const connectToMongoDB = require("./db/connectToDB");
 
 connectToMongoDB();
 
-const app = express();
-
-app.use(cors());
-// app.use(
-//   cors({
-//     origin: "http://localhost:3000,https://facebook-clone02.herokuapp.com",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//   })
-// );
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -30,11 +30,12 @@ app.use("/api/users", userRouter);
 app.use("/auth", authRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
+app.use("/api/conversations", convRouter);
 
 // ----------------- deployment --------------//
 
 __dirname = path.resolve();
-if (process.env.NODE_ENV == "production") {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/build")));
 
   app.get("*", (req, res) => {
@@ -60,8 +61,4 @@ app.use(function (err, req, res, next) {
   res.status(err.statusCode || 500).json({
     message: err.message,
   });
-});
-
-app.listen(process.env.PORT, function () {
-  console.log("Server is running on port", process.env.PORT);
 });

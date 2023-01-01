@@ -8,7 +8,7 @@ module.exports = {
       let newPost = new Post(req.body);
       await newPost.save();
       newPost = await Post.findOne({ userId: req.body.userId })
-        .populate("userId", "name")
+        .populate("user", "name")
         .exec();
       res.status(201).json(newPost);
     } catch (error) {
@@ -19,14 +19,14 @@ module.exports = {
     try {
       const userAndFriendsPosts = await User.aggregate([
         {
-          $match: { _id: mongoose.Types.ObjectId(req.body.userId) },
+          $match: { _id: mongoose.Types.ObjectId(req.params.userId) },
         },
         {
           $addFields: {
             users: {
               $concatArrays: [
                 "$friends",
-                [mongoose.Types.ObjectId(req.body.userId)],
+                [mongoose.Types.ObjectId(req.params.userId)],
               ],
             },
           },
@@ -35,7 +35,7 @@ module.exports = {
           $lookup: {
             from: "posts",
             localField: "users",
-            foreignField: "userId",
+            foreignField: "user",
             as: "posts",
           },
         },
@@ -55,8 +55,53 @@ module.exports = {
             posts: {
               $push: "$posts",
             },
-            name: {
-              $first: "$name",
+            name: { $first: "$name" },
+          },
+        },
+        // added stages
+        {
+          $unwind: "$posts",
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "posts.user",
+            foreignField: "_id",
+            as: "posts.user",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            posts: {
+              _id: 1,
+              user: { $arrayElemAt: ["$posts.user", 0] },
+              post: 1,
+              likes: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              __v: 1,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            posts: {
+              $push: {
+                _id: "$posts._id",
+                user: {
+                  _id: "$posts.user._id",
+                  name: "$posts.user.name",
+                },
+                post: "$posts.post",
+                likes: "$posts.likes",
+                createdAt: "$posts.createdAt",
+                updatedAt: "$posts.updatedAt",
+                __v: "$__v",
+              },
             },
           },
         },
@@ -72,7 +117,7 @@ module.exports = {
   },
   getUserPosts: async function (req, res, next) {
     try {
-      const posts = await Post.find({ userId: req.body.userId });
+      const posts = await Post.find({ user: req.params.userId }).populate("user","name");
       res.status(200).json(posts);
     } catch (error) {
       next(error);
@@ -103,6 +148,7 @@ module.exports = {
 
       res.status(200).json(post);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   },
@@ -143,7 +189,7 @@ module.exports = {
   getPostLikes: async function (req, res, next) {
     try {
       const postId = req.params.postId;
-      let post = await Post.findById(postId).populate("likes", "name");
+      let post = await Post.findById(postId).populate("likes", "_id name");
 
       if (!post) {
         const err = new Error("post is not found");

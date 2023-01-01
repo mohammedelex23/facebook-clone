@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams, useLocation } from "react-router-dom";
+import { Link, useSearchParams, useLocation, Navigate } from "react-router-dom";
 import authApi from "../api/authApi";
 
 export const Verify = () => {
@@ -10,6 +10,7 @@ export const Verify = () => {
   const [values, setValues] = useState({
     ready: false,
     error: false,
+    redirectToHome: false,
   });
 
   // component did mount: verify user
@@ -21,17 +22,26 @@ export const Verify = () => {
           ...values,
           ready: true,
           error: false,
+          redirectToHome: false,
         });
+        // redirect user to home after 2 seconds
+        setTimeout(() => {
+          setValues({
+            ...values,
+            redirectToHome: true,
+          });
+        }, 2000);
       } catch (error) {
         console.log(error);
         setValues({
           ...values,
           ready: false,
           error: true,
+          redirectToHome: false,
         });
       }
     })();
-  }, [id]);
+  }, [id, values.ready, values.error, values.redirectToHome]);
 
   return (
     <>
@@ -42,6 +52,7 @@ export const Verify = () => {
           </p>
         </div>
       )}
+      {values.redirectToHome && <Navigate to="/home" replace />}
       {values.error && (
         <div className="w-[320px] md:w-[400px] bg-[#b9b7b7] mt-20 mx-auto px-3 py-4 rounded-sm">
           <p>Something went wrong!, refresh the page</p>

@@ -15,17 +15,17 @@ router.post(
 
 // get user and friends posts
 router.get(
-  "/userAndFriendsPosts",
-  validateUserId,
+  "/userAndFriendsPosts/:userId",
+  // validateUserId,
   //   authenticateUser,
   postCtrl.getUserAndFriendsPosts
 );
 
 // get user posts
 router.get(
-  "/userPosts",
-  validateUserId,
-  //   authenticateUser,
+  "/userPosts/:userId",
+  // validateUserId,
+    // authenticateUser,
   postCtrl.getUserPosts
 );
 

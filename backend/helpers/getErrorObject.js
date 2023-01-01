@@ -12,7 +12,7 @@ const getErrorObject = function (error) {
           message:
             errName === "dateOfBirth"
               ? "invalid date format"
-              : `invalid ${errName}`,
+              : `invalid ${errName}: ${error.errors[errName].message}`,
         });
       } else {
         errors.push({

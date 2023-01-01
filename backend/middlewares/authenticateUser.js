@@ -21,8 +21,10 @@ module.exports = async function authenticateUser(req, res, next) {
     //   baseUrlArray.indexOf("posts") === -1
     //     ? req.params.userId
     //     : req.body.userId;
+    let user = await User.findById(req.body.userId || req.params.userId).select(
+      "-photo"
+    );
 
-    let user = await User.findById(req.body.userId).select("photo");
     if (!user) {
       const err = new Error("user is not found");
       err.statusCode = 404;
@@ -30,7 +32,11 @@ module.exports = async function authenticateUser(req, res, next) {
     }
 
     // compare id in token with userId in params or allow if user is admin
-    if (decodedToken.id !== req.body.userId && !decodedToken.isAdmin) {
+    if (
+      decodedToken.id !== req.body.userId &&
+      decodedToken.id !== req.params.userId &&
+      !decodedToken.isAdmin
+    ) {
       const err = new Error("you are not authorized");
       err.statusCode = 403;
       return next(err);

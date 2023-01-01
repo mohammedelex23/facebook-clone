@@ -10,6 +10,6 @@ router.post("/login", validateLogin, authCtrl.login);
 // verify signup
 router.put("/signup/verify/:userId", authCtrl.verifySignup);
 
-router.post("/resendmail", authCtrl.resendMail);
+router.post("/resendmail/:userId", authCtrl.resendMail);
 
 module.exports = router;

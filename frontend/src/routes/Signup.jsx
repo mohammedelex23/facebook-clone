@@ -30,7 +30,7 @@ export const Signup = () => {
     password: "",
   });
 
-  const { errors, handleOnBlur, handleOnChange, validateFormFields } =
+  const { errors, handleOnBlur, validateFormFields } =
     useSignupFormValidator(formState);
 
   const navigate = useNavigate();
@@ -72,23 +72,23 @@ export const Signup = () => {
 
     if (!isValid) return;
     try {
+      console.log(formState.month, formState.day);
       let data = {
         name: formState.name,
         email: formState.email,
         password: formState.password,
         gender: formState.gender,
         dateOfBirth: new Date(
-          `${formState.day}:${formState.month}:${formState.year}`
+          `${formState.year}-${formState.month}-${formState.day}`
         ),
       };
       let user = await authApi.signup(data);
       if (user) {
-        console.log(user);
         navigate(`/check_email?id=${user._id}`, { replace: true });
       }
     } catch (error) {
-      console.log(error);
-      if (error.type == "ValidationError") {
+      console.log(error, error.type);
+      if (error.type === "ValidationError") {
         error.errors.forEach((error) => {
           setApiErrors({
             ...apiErrors,

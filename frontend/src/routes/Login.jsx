@@ -1,13 +1,17 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
 import { ErrorComp } from "../components/ErrorComp";
 import { useLoginFormValidator } from "../components/hooks/useLoginFormValidator";
 import authHelpers from "../helpers/authHelpers";
+import { initializeLocalUser } from "../redux/slices/localUserSlice";
 
+////////////////////////////////////
 export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [formState, setFormState] = useState({
     email: "",
     password: "",
@@ -62,16 +66,18 @@ export const Login = () => {
         password: formState.password,
       });
       // save the token to local storage: token
-      authHelpers.authenticateUser(user.token);
+      authHelpers.authenticateUser(user);
+      dispatch(initializeLocalUser(user));
       // redirect user to home page or previous route he came from
       location.state ? navigate(location.state) : navigate("/home");
     } catch (error) {
       if (error.type === "NotVerified") {
         // redirect to verify page
-        navigate(`/verfyAccount?id=${error.userId}`);
+        navigate(`/check_email?id=${error.userId}`);
       } else if (error.type) {
         setApiError(error);
       } else {
+        console.log(error);
         setApiError({
           type: "ServerError",
           message: "Something went wrong!, try again",

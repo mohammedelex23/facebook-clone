@@ -1,0 +1,9 @@
+#route_indicator {
+  width: 14%;
+  height: 5px;
+  background-color: #60a5fa;
+  position: absolute;
+  left: 3%;
+  transition: all 0.3s;
+  bottom: 0;
+}

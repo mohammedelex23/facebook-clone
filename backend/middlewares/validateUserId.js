@@ -4,7 +4,7 @@ module.exports = async function (req, res, next) {
   try {
     let { userId } = req.body;
     // validate body
-    if (Object.keys(req.body).length === 0) {
+    if (!userId || !userId?.trim()) {
       const err = new Error("please send the json object in the request body");
       err.statusCode = 400;
       return next(err);
@@ -21,6 +21,7 @@ module.exports = async function (req, res, next) {
 
     // return validation error
     if (errors.length > 0) {
+      console.log(errors);
       return res.status(400).json({
         type: "ValidationError",
         errors,
@@ -29,6 +30,7 @@ module.exports = async function (req, res, next) {
 
     next();
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };

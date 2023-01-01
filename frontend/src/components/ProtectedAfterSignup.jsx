@@ -19,6 +19,7 @@ export const ProtectedAfterSignup = ({ children }) => {
       userApi
         .getUser(id)
         .then((user) => {
+          console.log("user", user);
           // if user is verified redirect to home
           if (user.isVerified) {
             setIsVerified(true);
