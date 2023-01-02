@@ -3,6 +3,7 @@ const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
 const httpServer = http.createServer(app);
+const io = new Server(httpServer);
 // const io = new Server(httpServer, {
 //   cors: {
 //     origin: "http://localhost:3000",
