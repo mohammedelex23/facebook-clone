@@ -3,12 +3,12 @@ const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
 const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  },
-});
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   },
+// });
 httpServer.listen(process.env.PORT || 5000, function () {
   console.log("Server is running on port", process.env.PORT || 5000);
 });

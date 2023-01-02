@@ -31,7 +31,8 @@ const client = new QueryClient({
   },
 });
 
-const socket = io("http://localhost:5000");
+// const socket = io("http://localhost:5000");
+const socket = io();
 
 function App() {
   const router = createBrowserRouter([
